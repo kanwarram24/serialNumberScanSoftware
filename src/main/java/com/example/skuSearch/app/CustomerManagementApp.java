@@ -33,7 +33,7 @@ public class CustomerManagementApp extends JFrame {
 
 
     public CustomerManagementApp() {
-        setTitle("Customer Management");
+        setTitle("Serial Number Scanner ");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Set width to 40% of screen width
@@ -56,7 +56,7 @@ public class CustomerManagementApp extends JFrame {
         invoiceNumberField = new JTextField(20);
 
         dateChooser = new JDateChooser();
-        dateChooser.setDateFormatString("yyyy-MM-dd");
+        dateChooser.setDateFormatString("dd-MM-yyyy");
 
         Calendar today = Calendar.getInstance();
         dateChooser.setDate(today.getTime());
@@ -65,7 +65,6 @@ public class CustomerManagementApp extends JFrame {
         resultTextPane.setEditable(false);
         resultTextPane.setPreferredSize(new Dimension(200, 100));
     }
-
 
 
     private void updateSearchResult(String message) {
@@ -124,7 +123,7 @@ public class CustomerManagementApp extends JFrame {
 
             int responseCode = connection.getResponseCode();
             if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
-                updateSearchResult("Customer updated successfully.");
+                succesfullySaveCustomer(connection, "Customer Updated successfully.");
             } else {
                 updateSearchResult("Failed to update customer. Response code: " + responseCode);
             }
@@ -155,20 +154,28 @@ public class CustomerManagementApp extends JFrame {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridx = 0;
+
+        gbc.gridx = 1;
         gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        mainPanel.add(new JLabel("Serial Number Scanner Software || Developed By Kanwar Ram"), gbc);
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.LINE_END;
 
-        mainPanel.add(new JLabel("Customer Name:"), gbc);
-        gbc.gridy++;
         mainPanel.add(new JLabel("Date:"), gbc);
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Customer Name:"), gbc);
         gbc.gridy++;
         mainPanel.add(new JLabel("Invoice Number:"), gbc);
         gbc.gridy++;
         mainPanel.add(new JLabel("Serial Number:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
@@ -220,7 +227,6 @@ public class CustomerManagementApp extends JFrame {
                 }
             }
         });
-
 
 
         JScrollPane searchResultScrollPane = new JScrollPane(searchResultTable);
@@ -325,13 +331,55 @@ public class CustomerManagementApp extends JFrame {
 
             // Check the response code
             int responseCode = connection.getResponseCode();
+
             if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
-                updateSearchResult("Customer added successfully.");
+                succesfullySaveCustomer(connection, "Customer added successfully.");
             } else {
                 updateSearchResult("Failed to add customer. Response code: " + responseCode);
             }
 
             connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void succesfullySaveCustomer(HttpURLConnection connection, String message) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Customer customer = objectMapper.readValue(response.toString(), Customer.class);
+
+            // Display data in a JTable
+            String[] columnNames = {"ID", "Customer Name", "Serial Numbers", "Date", "Invoice Number"};
+            Object[][] rowData = new Object[1][columnNames.length];
+
+            rowData[0][0] = customer.getId();
+            rowData[0][1] = customer.getCustomerName();
+            rowData[0][2] = String.join(", ", customer.getSkuList());
+            rowData[0][3] = customer.getDate();
+            rowData[0][4] = customer.getInvoiceNumber();
+
+
+            DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
+            searchResultTable.setModel(model);
+
+            TableColumnModel columnModel = searchResultTable.getColumnModel();
+            columnModel.getColumn(0).setWidth(0);
+            columnModel.getColumn(0).setMinWidth(0);
+            columnModel.getColumn(0).setMaxWidth(0);
+            columnModel.getColumn(0).setPreferredWidth(0);
+
+            JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            searchResultTable.getSelectionModel().setSelectionInterval(0, 0);
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -427,7 +475,6 @@ public class CustomerManagementApp extends JFrame {
                     columnModel.getColumn(0).setMinWidth(0);
                     columnModel.getColumn(0).setMaxWidth(0);
                     columnModel.getColumn(0).setPreferredWidth(0);
-
 
 
                 } catch (IOException e) {
