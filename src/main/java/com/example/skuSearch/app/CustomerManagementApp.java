@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Locale;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
@@ -297,6 +298,13 @@ public class CustomerManagementApp extends JFrame {
             return;
         }
 
+        customerName = customerName.toUpperCase();
+
+        // Convert all elements of skuList to lowercase
+        for (int i = 0; i < skuList.length; i++) {
+            skuList[i] = skuList[i].toLowerCase();
+        }
+
         // Build the URL for the backend API
         String apiUrl = "http://localhost:9090/api/customers";
 
@@ -387,6 +395,7 @@ public class CustomerManagementApp extends JFrame {
 
     private void searchBySKU(ActionEvent e) {
         String sku = skuField.getText();
+        sku = sku.toLowerCase();
         if (!sku.isEmpty()) {
             performSearch("/search/sku/" + sku);
             customerNameField.setText("");
@@ -400,6 +409,7 @@ public class CustomerManagementApp extends JFrame {
 
     private void searchByCustomerName(ActionEvent e) {
         String customerName = customerNameField.getText();
+        customerName = customerName.toUpperCase();
         String encodedName = URLEncoder.encode(customerName, StandardCharsets.UTF_8);
         if (!customerName.isEmpty()) {
             performSearch("/search/customerName/" + encodedName);
@@ -410,8 +420,6 @@ public class CustomerManagementApp extends JFrame {
         } else {
             updateSearchResult("Customer name field cannot be empty.");
         }
-
-
     }
 
     private void searchByInvoiceNumber(ActionEvent e) {
