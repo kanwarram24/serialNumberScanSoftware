@@ -1,7 +1,10 @@
 package com.example.skuSearch;
 import com.example.skuSearch.app.CustomerManagementApp;
+import com.example.skuSearch.updateScripts.CaseSensitiveUpdate;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 import java.awt.*;
 
