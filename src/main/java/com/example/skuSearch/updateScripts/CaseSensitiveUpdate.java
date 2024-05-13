@@ -18,7 +18,7 @@ public class CaseSensitiveUpdate implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // updateCustomers();
+        //updateCustomers();
         System.out.println("Script Already Run Through No need to run this again.");
 
     }

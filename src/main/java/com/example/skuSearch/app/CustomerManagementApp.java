@@ -48,7 +48,16 @@ public class CustomerManagementApp extends JFrame {
         setResizable(false); // Prevent resizing for simplicity
 
         initComponents();
+        mouseEditing();
         layoutComponents();
+    }
+
+    private void mouseEditing(){
+        ContextMenuMouseListener contextMenuMouseListener = new ContextMenuMouseListener();
+        skuField.addMouseListener(contextMenuMouseListener);
+        customerNameField.addMouseListener(contextMenuMouseListener);
+        invoiceNumberField.addMouseListener(contextMenuMouseListener);
+        resultTextPane.addMouseListener(contextMenuMouseListener);
     }
 
     private void initComponents() {
@@ -95,6 +104,13 @@ public class CustomerManagementApp extends JFrame {
         if (customerName.isEmpty() || date.isEmpty() || skuList.length == 0) {
             updateSearchResult("Please fill in the customerName, Date, and Serial Numbers fields.");
             return;
+        }
+
+        customerName = customerName.toUpperCase();
+
+        // Convert all elements of skuList to lowercase
+        for (int i = 0; i < skuList.length; i++) {
+            skuList[i] = skuList[i].toLowerCase();
         }
 
 
