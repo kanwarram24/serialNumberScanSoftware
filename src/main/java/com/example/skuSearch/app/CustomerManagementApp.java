@@ -17,9 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
@@ -76,6 +74,30 @@ public class CustomerManagementApp extends JFrame {
         resultTextPane.setPreferredSize(new Dimension(200, 100));
     }
 
+    private String sanitizeInput(String input) {
+        Map<Character, Character> replacements = new HashMap<>();
+        replacements.put('â', 'a');
+        replacements.put('ä', 'a');
+        replacements.put('á', 'a');
+        replacements.put('å', 'a');
+        replacements.put('ö', 'o');
+        replacements.put('ô', 'o');
+        replacements.put('ó', 'o');
+        replacements.put('í', 'i');
+        replacements.put('ì', 'i');
+        replacements.put('î', 'i');
+        replacements.put('é', 'e');
+        replacements.put('è', 'e');
+        replacements.put('ê', 'e');
+        replacements.put('ñ', 'n');
+
+        StringBuilder sanitized = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            sanitized.append(replacements.getOrDefault(c, c));
+        }
+        return sanitized.toString();
+    }
+
 
     private void updateSearchResult(String message) {
         // Create a new table model with a single row and a single column
@@ -110,7 +132,7 @@ public class CustomerManagementApp extends JFrame {
 
         // Convert all elements of skuList to lowercase
         for (int i = 0; i < skuList.length; i++) {
-            skuList[i] = skuList[i].toLowerCase();
+            skuList[i] = sanitizeInput(skuList[i].toLowerCase());
         }
 
 
@@ -318,7 +340,7 @@ public class CustomerManagementApp extends JFrame {
 
         // Convert all elements of skuList to lowercase
         for (int i = 0; i < skuList.length; i++) {
-            skuList[i] = skuList[i].toLowerCase();
+            skuList[i] = sanitizeInput(skuList[i].toLowerCase());
         }
 
         // Build the URL for the backend API
