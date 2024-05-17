@@ -433,7 +433,7 @@ public class CustomerManagementApp extends JFrame {
 
     private void searchBySKU(ActionEvent e) {
         String sku = skuField.getText();
-        sku = sku.toLowerCase();
+        sku = sanitizeInput(sku.toLowerCase());
         if (!sku.isEmpty()) {
             performSearch("/search/sku/" + sku);
             customerNameField.setText("");
